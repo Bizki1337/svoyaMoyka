@@ -1,0 +1,49 @@
+.content {
+    background-color: black;
+    color: white;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+}
+.item {
+    margin: 20px;
+    padding: 20px;
+    border: 1px solid white;
+    border-radius: 10px;
+}
+.wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+.border {
+    transform: rotate(90deg);
+    margin: 30px;
+    font-size: 2em;
+    display: flex;
+}
+.circle {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    border: 5px solid #FF013E;
+    margin: 1px 10px 0px 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.miniCircle {
+    width: 20px;
+    height: 20px;
+    background-color: #FF013E;
+    border-radius: 50%;
+}
+.fix {
+    margin: 10px;
+    border-bottom: 1px solid white;
+}
+.title {
+    margin: 20px;
+    font-size: 2em;
+}
