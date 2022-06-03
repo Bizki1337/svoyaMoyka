@@ -33,16 +33,18 @@ const Form = ({
 	}
 
 	const [appState, setAppState] = useState<any>(null);
-  
-	useEffect(() => {
-		const date = getOwnDate(new Date);
+
+	const getDataByDate = (date: string) => {
 		const apiUrl = `http://localhost:5000/api/books/${date}`;
 		axios.get(apiUrl).then((resp) => {
-			console.log('qweqweqwe')
 			const data = resp.data;
 			const newData = data.map((item: any) => item.time)
 			setAppState(newData);
 		});
+	}
+
+	useEffect(() => {
+		getDataByDate(getOwnDate(new Date))
 	}, []);
 
 	const timeOptions = {
@@ -135,6 +137,7 @@ const Form = ({
 
 	const onDateChange = (date: Date) => {
 		setDateState(getOwnDate(date));
+		getDataByDate(getOwnDate(date));
 	}
 
 	const book = () => {
@@ -148,7 +151,6 @@ const Form = ({
 		onClose();
 	}
 
-	console.log('appState', appState)
 	return (
 		<div className={styles.wrapper}>
 			<input 

@@ -1,13 +1,18 @@
 import { Router } from 'express';
-import PostController from './PostController.js';
+
+import BookController from './controllers/BookController.js';
+import UserController from './controllers/UserController.js';
 
 const router = new Router();
 
-router.post('/books', PostController.create);
-router.get('/books', PostController.getAll);
-router.get('/books/:date', PostController.getByDate);
-router.get('/books/phone/:phone', PostController.getByPhone);
-router.put('/books', PostController.update);
-router.delete('/books/:id', PostController.delete);
+router.post('/books', BookController.create);
+router.get('/books', BookController.getAll);
+router.get('/books/:date', BookController.getByDate);
+router.get('/books/phone/:phone', BookController.getByPhone);
+router.put('/books', BookController.update);
+router.delete('/books/:id', BookController.delete);
+
+router.post('/users', UserController.create);
+router.get('/users', UserController.getAll);
 
 export default router;

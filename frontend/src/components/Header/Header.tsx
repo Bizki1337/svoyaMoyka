@@ -1,5 +1,6 @@
 import { useState, useEffect, ChangeEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 import cn from 'classnames';
 
 import Modal from 'components/Modal/Modal';
@@ -22,23 +23,26 @@ const Header = ({
 
     // example: () => navigate('/menu')
 
-    const links = [
-        {
-            title: 'ГЛАВНАЯ',
-            link: '/',
-            active: true
-        },
-        {
-            title: 'О НАС',
-            link: '/'
-        },
-        {
-            title: 'КОНТАКТЫ',
-            link: '/'
-        },
-    ]
-
     const [isOpenModal, setIsOpenModal] = useState(false);
+    const [isOpenModalReg, setIsOpenModalReg] = useState(false);
+
+    const [phoneAndPass, setPhoneAndPass] = useState<any>({});
+	const [phonePassName, setPhonePassName] = useState<any>({});
+	const [allUsers, setAllUsers] = useState<any>({});
+	const [profileText, setprofileText] = useState<any>('Авторизация');
+
+    useEffect(() => {
+        const apiUrl = `http://localhost:5000/api/users`;
+		axios.get(apiUrl).then((resp) => {
+			const data = resp.data;
+			setAllUsers(data);
+		});
+        const LS = JSON.parse(localStorage.getItem('user') || '{}');
+        if (LS.name) {
+            setprofileText(LS.name);
+        };
+
+    }, [])
 
     useEffect(() => {
         if (isOpenModal) {
@@ -49,10 +53,26 @@ const Header = ({
     }, [isOpenModal])
 
     const toggleModal = () => {
-        setIsOpenModal(!isOpenModal);
+        if (profileText === 'Авторизация') {
+            setIsOpenModal(!isOpenModal);
+        } else {
+            navigate('/profile')
+        }
+    };
+    
+    const toggleRegModal = () => {
+        if (isOpenModalReg) {
+            setPhonePassName({});
+        }
+        setIsOpenModalReg(!isOpenModalReg);
     };
 
-	const [phoneAndPass, setPhoneAndPass] = useState<any>({});
+    const onInputRegChange = (e: ChangeEvent<HTMLInputElement>) => {
+		setPhonePassName({
+			...phonePassName,
+			[e.target.id]: e.target.value
+		})
+	};
 
     const onInputChange = (e: ChangeEvent<HTMLInputElement>) => {
 		setPhoneAndPass({
@@ -62,14 +82,55 @@ const Header = ({
 	};
 
     const handleClick = () => {
-        if (phoneAndPass.phone === '89515342928' && phoneAndPass.password === '89515342928') {
+        if (allUsers) {
+            const isInclude = allUsers.find((user: any) => {
+                return user.client_phone === phoneAndPass.phone && user.client_password === phoneAndPass.password
+            })
+            if (isInclude) {
+                if (isInclude.role) {
+                    const newValue = {
+                        role: 'admin',
+                        telephone: isInclude.client_phone,
+                        name: isInclude.client_name,
+                    }
+                    localStorage.setItem('user', JSON.stringify(newValue));
+                } else {
+                    const newValue = {
+                        role: 'user',
+                        telephone: isInclude.client_phone,
+                        name: isInclude.client_name,
+                    }
+                    localStorage.setItem('user', JSON.stringify(newValue));
+                }
+                navigate('/profile');
+            }
+        }
+        // if (phoneAndPass.phone === '89515342928' && phoneAndPass.password === '89515342928') {
+        //     localStorage.setItem('role', 'user');
+        //     navigate('/profile')
+        // } else if (phoneAndPass.phone === 'admin' && phoneAndPass.password === 'admin') {
+        //     navigate('/profile')
+        //     localStorage.setItem('role', 'admin');
+        // } else {
+        //     alert('Неправильные данные :(')
+        // }
+    }
+
+    const handleClickReg = () => {
+        const isInclude = allUsers.find((user: any) => {
+            return user.client_phone === phonePassName.phone
+        })
+        if (isInclude?.client_phone) {
+            alert('такой пользователь уже существует');
+        } else {
+            const data = {
+                client_name: phonePassName.name,
+                client_phone: phonePassName.phone,
+                client_password: phonePassName.password
+            }
+            axios.post(`http://localhost:5000/api/users`, data);
             localStorage.setItem('role', 'user');
             navigate('/profile')
-        } else if (phoneAndPass.phone === 'admin' && phoneAndPass.password === 'admin') {
-            navigate('/profile')
-            localStorage.setItem('role', 'admin');
-        } else {
-            alert('Неправильные данные :(')
         }
     }
 
@@ -77,6 +138,7 @@ const Header = ({
         <div className={styles.wrapper}>
             <div className={styles.background} />
             <img
+                onClick={() => navigate('/')}
                 className={styles.img} 
                 src={headerIMG}
                 alt='header'
@@ -89,19 +151,29 @@ const Header = ({
                         alt='logo'
                     />
                     <div className={styles.links}>
-                        {
-                            links.map((item) => (
-                                <div
-                                    key={item.title}
-                                    className={cn(
-                                        styles.link,
-                                        {[styles.active]: item.active}
-                                    )}
-                                >
-                                    {item.title}
-                                </div>
-                            ))
-                        }
+
+                    <div
+                        className={cn(
+                            styles.link,
+                            styles.active
+                        )}
+                        onClick={() => navigate('/')}
+                    >
+                        ГЛАВНАЯ
+                    </div>
+                    <div
+                        className={styles.link}
+                        onClick={() => navigate('/')}
+                    >
+                        О НАС
+                    </div>
+                    <div
+                        className={styles.link}
+                        onClick={() => navigate('/')}
+                    >
+                        КОНТАКТЫ
+                    </div>
+
                     </div>
                     <div
                         onClick={toggleModal}
@@ -111,7 +183,17 @@ const Header = ({
                             styles.active
                         )}
                     >
-                        {profile}
+                        {profileText}
+                    </div>
+                    <div
+                        onClick={toggleRegModal}
+                        className={cn(
+                            styles.profile,
+                            styles.link,
+                            styles.active
+                        )}
+                    >
+                        Регистрация
                     </div>
                 </div>
                 <div className={styles.bodyContent}>
@@ -146,6 +228,41 @@ const Header = ({
                                 className={styles.button}
                             >
                                 Войти
+                            </button>
+                        </div>
+                    </Modal>
+                )
+            }
+            {
+                isOpenModalReg && (
+                    <Modal
+                        onClose={toggleRegModal}
+                    >
+                        <div className={styles.modalWrapper}>
+                            <div className={styles.modalTitle}>Регистрация</div>
+                            <input 
+                                onChange={(e: any) => onInputRegChange(e)} 
+                                placeholder='Имя'
+                                id='name'
+                                className={styles.input}
+                            />
+                            <input 
+                                onChange={(e: any) => onInputRegChange(e)} 
+                                placeholder='Телефон'
+                                id='phone'
+                                className={styles.input}
+                            />
+                            <input 
+                                onChange={(e: any) => onInputRegChange(e)} 
+                                placeholder='Пароль'
+                                id='password'
+                                className={styles.input}
+                            />
+                            <button
+                                onClick={handleClickReg}
+                                className={styles.button}
+                            >
+                                Зарегистрироваться
                             </button>
                         </div>
                     </Modal>

@@ -8,21 +8,26 @@ import styles from './profilePage.module.css';
 const ProfilePage = () => {
 
     const [state, setState] = useState<any>();
-
+    const [user, setUser] = useState<any>();
+    
     useEffect(() => {
-        const userRole = localStorage.getItem('role');
-        let url, parametr;
-        if (userRole === 'user') {
-            parametr = '89515342928';
-            url = `http://localhost:5000/api/books/phone/${parametr}`;
-        } else {
-            url = 'http://localhost:5000/api/books';
-        };
-		axios.get(url).then((resp) => {
-			const data = resp.data;
-			setState(data);
-		});
-	}, []);
+        setUser(JSON.parse(localStorage.getItem('user') || '{}'))
+    }, []);
+   
+    useEffect(() => {
+        let url;
+        if (user?.role) {
+            if (user?.role === 'user') {
+                url = `http://localhost:5000/api/books/phone/${user.telephone}`;
+            } else {
+                url = 'http://localhost:5000/api/books';
+            };
+            axios.get(url).then((resp) => {
+                const data = resp.data;
+                setState(data);
+            });
+        }
+	}, [user]);
 
     return (
         <div>

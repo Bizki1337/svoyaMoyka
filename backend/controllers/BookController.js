@@ -1,18 +1,18 @@
-import Post from './Post.js';
+import Book from '../schemas/Book.js';
 
-class Postcontroller {
+class Bookcontroller {
     async create(req, res) {
         try {
             const {id, client_name, client_phone, date, time} = req.body;
 			res.header("Access-Control-Allow-Origin", "*");
-            const post = await Post.create({
+            const book = await Book.create({
                 id,
                 client_name,
                 client_phone,
                 date,
                 time
             });
-            res.json(post);
+            res.json(book);
         } catch (e) {
             res.status(500).json(e);
         };
@@ -20,7 +20,7 @@ class Postcontroller {
 
 	async getAll(req, res) {
 		try {
-			const books = await Post.find();
+			const books = await Book.find();
 			res.header("Access-Control-Allow-Origin", "*");
 			return res.json(books);
 		} catch (e) {
@@ -35,7 +35,7 @@ class Postcontroller {
 			if (!date) {
 				res.status(400).json({message: 'Дата не указана'})
 			};
-			const book = await Post.find({date: date});
+			const book = await Book.find({date: date});
 			return res.json(book);
 		} catch (e) {
 			res.status(500).json(e);
@@ -49,7 +49,7 @@ class Postcontroller {
 			if (!phone) {
 				res.status(400).json({message: 'Телефон не указан'})
 			};
-			const book = await Post.find({client_phone: phone});
+			const book = await Book.find({client_phone: phone});
 			return res.json(book);
 		} catch (e) {
 			res.status(500).json(e);
@@ -64,7 +64,7 @@ class Postcontroller {
 			if (!book._id) {
 				res.status(400).json({message: 'Id не указан'})
 			}
-			const updatedBook = await Post.findByIdAndUpdate(book._id, book, {new: true});
+			const updatedBook = await Book.findByIdAndUpdate(book._id, book, {new: true});
 			return res.json(updatedBook);
 		} catch (e) {
 			res.status(500).json(e);
@@ -78,7 +78,7 @@ class Postcontroller {
 			if (!id) {
 				res.status(400).json({message: 'Id не указан'})
 			}
-			const book = await Post.findByIdAndDelete(id);
+			const book = await Book.findByIdAndDelete(id);
 			return res.json(book);
 		} catch (e) {
 			res.status(500).json(e);
@@ -86,4 +86,4 @@ class Postcontroller {
 	};
 };
 
-export default new Postcontroller();
+export default new Bookcontroller();
