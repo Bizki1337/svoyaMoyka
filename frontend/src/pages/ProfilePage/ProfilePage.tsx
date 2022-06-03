@@ -7,7 +7,8 @@ import styles from './profilePage.module.css';
 
 const ProfilePage = () => {
 
-    const [state, setState] = useState<any>();
+    const [books, setBooks] = useState<any>();
+    const [usersInfo, setUsersInfo] = useState<any>();
     const [user, setUser] = useState<any>();
     
     useEffect(() => {
@@ -15,57 +16,136 @@ const ProfilePage = () => {
     }, []);
    
     useEffect(() => {
-        let url;
+        let url, url2;
         if (user?.role) {
             if (user?.role === 'user') {
                 url = `http://localhost:5000/api/books/phone/${user.telephone}`;
             } else {
                 url = 'http://localhost:5000/api/books';
+                url2 = 'http://localhost:5000/api/users';
+                axios.get(url2).then((resp) => {
+                    const data = resp.data;
+                    setUsersInfo(data);
+                });
             };
             axios.get(url).then((resp) => {
                 const data = resp.data;
-                setState(data);
+                console.log('data', data);
+                setBooks(data);
             });
         }
 	}, [user]);
+
+    const deleteBook = (id: string) => {
+        const url = `http://localhost:5000/api/books/${id}`;
+        const newBooks = books.filter((item: any) => item._id !== id);
+        axios.delete(url);
+        setBooks(newBooks)
+    }
+
+    const deleteUser = (id: string) => {
+        const url = `http://localhost:5000/api/users/${id}`;
+        const newUsers = usersInfo.filter((item: any) => item._id !== id);
+        axios.delete(url);
+        setUsersInfo(newUsers)
+    }
 
     return (
         <div>
             <Header profile='ВАШ КАБИНЕТ' />
             <div className={styles.content}>
                 <div className={styles.title}>
-                    Ваша история
+                    История
                 </div>
-                {
-                    state && state.map((item: any) => (
-                        <div
-                            className={styles.wrapper}
-                            key={item._id}
-                        >   
-                            <div className={styles.item}>
+                <div className={styles.wrapperContent}>
+                    {
+                        usersInfo && (
+                            <div className={styles.content2}>
                                 <div>
-                                    <div>Имя: </div>
-                                    <div className={styles.fix}>{item.client_name}</div>
+                                    Клиенты
                                 </div>
-                                <div>
-                                    <div>Телефон: </div>
-                                    <div className={styles.fix}>{item.client_phone}</div>
-                                </div>
-                                <div>
-                                    <div>Дата: </div>
-                                    <div className={styles.fix}>{item.date}</div>
-                                </div>
+                                {
+                                    usersInfo && usersInfo.map((item: any) => (
+                                        <div
+                                            className={styles.wrapper}
+                                            key={item._id}
+                                        >   
+                                            <div className={styles.item}>
+                                                <div>
+                                                    <div>Имя: </div>
+                                                    <div className={styles.fix}>{item.client_name}</div>
+                                                </div>
+                                                <div>
+                                                    <div>Телефон: </div>
+                                                    <div className={styles.fix}>{item.client_phone}</div>
+                                                </div>
+                                                <div>
+                                                    <div>Пароль: </div>
+                                                    <div className={styles.fix}>{item.client_password}</div>
+                                                    <div 
+                                                        className={styles.delete}
+                                                        onClick={() => deleteUser(item._id)}
+                                                    >
+                                                        Удалить
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div className={styles.border}>
+                                                <div>---</div>
+                                                <div className={styles.circle}>
+                                                    <div className={styles.miniCircle} />
+                                                </div> 
+                                                <div>---</div>
+                                            </div>
+                                        </div>
+                                    ))
+                                }
                             </div>
-                            <div className={styles.border}>
-                                <div>---</div>
-                                <div className={styles.circle}>
-                                    <div className={styles.miniCircle} />
-                                </div> 
-                                <div>---</div>
-                            </div>
+
+                        )
+                    }
+                    <div>
+                        <div className={styles.content2}>
+                            Записи
                         </div>
-                    ))
-                }
+                        {
+                            books && books.map((item: any) => (
+                                <div
+                                    className={styles.wrapper}
+                                    key={item._id}
+                                >   
+                                    <div className={styles.item}>
+                                        <div>
+                                            <div>Имя: </div>
+                                            <div className={styles.fix}>{item.client_name}</div>
+                                        </div>
+                                        <div>
+                                            <div>Телефон: </div>
+                                            <div className={styles.fix}>{item.client_phone}</div>
+                                        </div>
+                                        <div>
+                                            <div>Дата: </div>
+                                            <div className={styles.fix}>{item.date.replace(/q/g, '/')}</div>
+                                        </div>
+                                        <div 
+                                            className={styles.delete}
+                                            onClick={() => deleteBook(item._id)}
+                                        >
+                                            Удалить
+                                        </div>
+                                    </div>
+                                    <div className={styles.border}>
+                                        <div>---</div>
+                                        <div className={styles.circle}>
+                                            <div className={styles.miniCircle} />
+                                        </div> 
+                                        <div>---</div>
+                                    </div>
+                                </div>
+                            ))
+                        }
+                    </div>
+                </div>
             </div>
         </div>
     );

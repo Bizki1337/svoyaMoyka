@@ -47,3 +47,13 @@
     margin: 20px;
     font-size: 2em;
 }
+.wrapperContent {
+    display: flex;
+    width: 100%;
+    justify-content: space-around;
+}
+.content2 {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}

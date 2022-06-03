@@ -71,19 +71,19 @@ class Usercontroller {
 	// 	};
 	// };
 
-	// /* Удаление записи для админ-панели */
-	// async delete(req, res) {
-	// 	try {
-	// 		const {id} = req.params;
-	// 		if (!id) {
-	// 			res.status(400).json({message: 'Id не указан'})
-	// 		}
-	// 		const book = await Book.findByIdAndDelete(id);
-	// 		return res.json(book);
-	// 	} catch (e) {
-	// 		res.status(500).json(e);
-	// 	};
-	// };
+	/* Удаление записи для админ-панели */
+	async delete(req, res) {
+		try {
+			const {id} = req.params;
+			if (!id) {
+				res.status(400).json({message: 'Id не указан'})
+			}
+			const user = await User.findByIdAndDelete(id);
+			return res.json(user);
+		} catch (e) {
+			res.status(500).json(e);
+		};
+	};
 };
 
 export default new Usercontroller();

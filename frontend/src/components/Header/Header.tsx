@@ -30,6 +30,7 @@ const Header = ({
 	const [phonePassName, setPhonePassName] = useState<any>({});
 	const [allUsers, setAllUsers] = useState<any>({});
 	const [profileText, setprofileText] = useState<any>('Авторизация');
+	const [registrText, setRegistrText] = useState<any>('Регистрация');
 
     useEffect(() => {
         const apiUrl = `http://localhost:5000/api/users`;
@@ -40,8 +41,8 @@ const Header = ({
         const LS = JSON.parse(localStorage.getItem('user') || '{}');
         if (LS.name) {
             setprofileText(LS.name);
+            setRegistrText('Выход');
         };
-
     }, [])
 
     useEffect(() => {
@@ -54,17 +55,24 @@ const Header = ({
 
     const toggleModal = () => {
         if (profileText === 'Авторизация') {
-            setIsOpenModal(!isOpenModal);
+            setIsOpenModal(true);
         } else {
             navigate('/profile')
         }
     };
     
     const toggleRegModal = () => {
-        if (isOpenModalReg) {
-            setPhonePassName({});
+        console.log('123123123123123')
+
+        if (registrText === 'Регистрация') {
+                console.log('qweqweqweqe')
+                setPhonePassName({});
+                setIsOpenModalReg(true);
+        } else {
+            localStorage.removeItem('user');
+            navigate('/')
+            window.location.reload()
         }
-        setIsOpenModalReg(!isOpenModalReg);
     };
 
     const onInputRegChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -104,16 +112,8 @@ const Header = ({
                 }
                 navigate('/profile');
             }
+            setIsOpenModal(false);
         }
-        // if (phoneAndPass.phone === '89515342928' && phoneAndPass.password === '89515342928') {
-        //     localStorage.setItem('role', 'user');
-        //     navigate('/profile')
-        // } else if (phoneAndPass.phone === 'admin' && phoneAndPass.password === 'admin') {
-        //     navigate('/profile')
-        //     localStorage.setItem('role', 'admin');
-        // } else {
-        //     alert('Неправильные данные :(')
-        // }
     }
 
     const handleClickReg = () => {
@@ -193,7 +193,7 @@ const Header = ({
                             styles.active
                         )}
                     >
-                        Регистрация
+                        {registrText}
                     </div>
                 </div>
                 <div className={styles.bodyContent}>
@@ -207,7 +207,7 @@ const Header = ({
             {
                 isOpenModal && (
                     <Modal
-                        onClose={toggleModal}
+                        onClose={() => setIsOpenModal(false)}
                     >
                         <div className={styles.modalWrapper}>
                             <div className={styles.modalTitle}>Авторизация</div>
@@ -236,7 +236,7 @@ const Header = ({
             {
                 isOpenModalReg && (
                     <Modal
-                        onClose={toggleRegModal}
+                        onClose={() => setIsOpenModalReg(false)}
                     >
                         <div className={styles.modalWrapper}>
                             <div className={styles.modalTitle}>Регистрация</div>

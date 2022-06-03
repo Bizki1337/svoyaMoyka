@@ -14,5 +14,6 @@ router.delete('/books/:id', BookController.delete);
 
 router.post('/users', UserController.create);
 router.get('/users', UserController.getAll);
+router.delete('/users/:id', UserController.delete);
 
 export default router;
