@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import axios from 'axios';
+import cn from 'classnames';
 
 import Header from 'components/Header/Header';
 
@@ -7,9 +8,12 @@ import styles from './profilePage.module.css';
 
 const ProfilePage = () => {
 
+    const tabs = ['История', 'Обратная связь', 'Клиенты'];
+
     const [books, setBooks] = useState<any>();
     const [usersInfo, setUsersInfo] = useState<any>();
     const [user, setUser] = useState<any>();
+    const [activeTab, setActiveTab] = useState('История');
     
     useEffect(() => {
         setUser(JSON.parse(localStorage.getItem('user') || '{}'))
@@ -30,7 +34,6 @@ const ProfilePage = () => {
             };
             axios.get(url).then((resp) => {
                 const data = resp.data;
-                console.log('data', data);
                 setBooks(data);
             });
         }
@@ -52,59 +55,149 @@ const ProfilePage = () => {
 
     return (
         <div>
-            <Header profile='ВАШ КАБИНЕТ' />
+            <Header 
+                isProfile={true}
+            />
             <div className={styles.content}>
                 <div className={styles.title}>
-                    История
+                    {activeTab}
                 </div>
                 <div className={styles.wrapperContent}>
-                    {
-                        usersInfo && (
-                            <div className={styles.content2}>
-                                <div>
+                    <div className={styles.tabs}>
+                        <div
+                            className={cn(
+                                styles.tab,
+                                {[styles.active]: activeTab === 'История'},
+                            )}
+                            onClick={() => setActiveTab('История')}
+                        >
+                            История
+                        </div>
+                        {
+                            user && user.role === 'admin' && (
+                                <div
+                                    onClick={() => setActiveTab('Клиенты')}
+                                    className={cn(
+                                        styles.tab,
+                                        {[styles.active]: activeTab === 'Клиенты'},
+                                    )}
+                                >
                                     Клиенты
                                 </div>
-                                {
-                                    usersInfo && usersInfo.map((item: any) => (
-                                        <div
-                                            className={styles.wrapper}
-                                            key={item._id}
-                                        >   
-                                            <div className={styles.item}>
-                                                <div>
-                                                    <div>Имя: </div>
-                                                    <div className={styles.fix}>{item.client_name}</div>
-                                                </div>
-                                                <div>
-                                                    <div>Телефон: </div>
-                                                    <div className={styles.fix}>{item.client_phone}</div>
-                                                </div>
-                                                <div>
-                                                    <div>Пароль: </div>
-                                                    <div className={styles.fix}>{item.client_password}</div>
+                            )
+                        }
+                        <div 
+                            className={cn(
+                                styles.tab,
+                                {[styles.active]: activeTab === 'Обратная связь'},
+                            )}
+                            onClick={() => setActiveTab('Обратная связь')}
+                        >
+                            Обратная связь
+                        </div>
+                    </div>
+                    <div className={styles.tabWrapper}>
+                        {
+                            activeTab === 'История' && (
+                                <div>
+                                    {
+                                        books && books.map((item: any) => (
+                                            <div
+                                                className={styles.wrapper}
+                                                key={item._id}
+                                            >   
+                                                <div className={styles.item}>
+                                                    <div>
+                                                        <div>Имя: </div>
+                                                        <div className={styles.fix}>{item.client_name}</div>
+                                                    </div>
+                                                    <div>
+                                                        <div>Телефон: </div>
+                                                        <div className={styles.fix}>{item.client_phone}</div>
+                                                    </div>
+                                                    <div>
+                                                        <div>Дата: </div>
+                                                        <div className={styles.fix}>{item.date.replace(/q/g, '/')}</div>
+                                                    </div>
                                                     <div 
                                                         className={styles.delete}
-                                                        onClick={() => deleteUser(item._id)}
+                                                        onClick={() => deleteBook(item._id)}
                                                     >
                                                         Удалить
                                                     </div>
                                                 </div>
+                                                <div className={styles.border}>
+                                                    <div>---</div>
+                                                    <div className={styles.circle}>
+                                                        <div className={styles.miniCircle} />
+                                                    </div> 
+                                                    <div>---</div>
+                                                </div>
                                             </div>
-                                            <div className={styles.border}>
-                                                <div>---</div>
-                                                <div className={styles.circle}>
-                                                    <div className={styles.miniCircle} />
-                                                </div> 
-                                                <div>---</div>
-                                            </div>
+                                        ))
+                                    }
+                                </div>
+                            )
+                        }
+                        {
+                            activeTab === 'Обратная связь' && (
+                                <div className={styles.tabContent}>
+                                        <div className={styles.tabTitle}>
+                                            Напишите нам:
                                         </div>
-                                    ))
-                                }
-                            </div>
-
-                        )
-                    }
-                    <div>
+                                        <textarea className={styles.textArea} />
+                                        <button
+                                            className={styles.button}
+                                        >
+                                            Отправить
+                                        </button>
+                                </div>
+                            )
+                        }
+                        {
+                            activeTab === 'Клиенты' && usersInfo && (
+                                <div>
+                                    {
+                                        usersInfo && usersInfo.map((item: any) => (
+                                            <div
+                                                className={styles.wrapper}
+                                                key={item._id}
+                                            >   
+                                                <div className={styles.item}>
+                                                    <div>
+                                                        <div>Имя: </div>
+                                                        <div className={styles.fix}>{item.client_name}</div>
+                                                    </div>
+                                                    <div>
+                                                        <div>Телефон: </div>
+                                                        <div className={styles.fix}>{item.client_phone}</div>
+                                                    </div>
+                                                    <div>
+                                                        <div>Пароль: </div>
+                                                        <div className={styles.fix}>{item.client_password}</div>
+                                                        <div 
+                                                            className={styles.delete}
+                                                            onClick={() => deleteUser(item._id)}
+                                                        >
+                                                            Удалить
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div className={styles.border}>
+                                                    <div>---</div>
+                                                    <div className={styles.circle}>
+                                                        <div className={styles.miniCircle} />
+                                                    </div> 
+                                                    <div>---</div>
+                                                </div>
+                                            </div>
+                                        ))
+                                    }
+                                </div>
+                            )
+                        }
+                    </div>
+                    {/* <div>
                         <div className={styles.content2}>
                             Записи
                         </div>
@@ -144,7 +237,7 @@ const ProfilePage = () => {
                                 </div>
                             ))
                         }
-                    </div>
+                    </div> */}
                 </div>
             </div>
         </div>

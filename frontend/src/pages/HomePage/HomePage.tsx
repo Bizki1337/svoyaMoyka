@@ -10,7 +10,7 @@ import styles from './homePage.module.css';
 const HomePage = () => {
     return (
         <div className={styles.wrapper}>
-            <Header profile='ВХОД' />
+            <Header isProfile={false} />
             <Introduction />
             <AboutUs />
             <Cleaning />

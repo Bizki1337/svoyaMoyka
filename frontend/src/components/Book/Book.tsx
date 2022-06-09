@@ -27,7 +27,7 @@ const Book = () => {
                 onClick={toggleModal} 
                 className={styles.button}
             >
-                Забронировать
+                Записаться
             </button>
             {
                 isOpenModal && (

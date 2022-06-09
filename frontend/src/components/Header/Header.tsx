@@ -4,6 +4,7 @@ import axios from 'axios';
 import cn from 'classnames';
 
 import Modal from 'components/Modal/Modal';
+import Form from 'components/Form/FormContent/Form';
 
 import headerIMG from 'assets/images/header.png';
 
@@ -12,11 +13,11 @@ import logoSVG from 'assets/icons/logo.svg';
 import styles from './header.module.css';
 
 interface IHeader {
-    profile: string;
+    isProfile?: boolean;
 }
 
 const Header = ({
-    profile,
+    isProfile,
 }: IHeader) => {
 
     const navigate = useNavigate();
@@ -25,12 +26,26 @@ const Header = ({
 
     const [isOpenModal, setIsOpenModal] = useState(false);
     const [isOpenModalReg, setIsOpenModalReg] = useState(false);
+    const [isOpenBookModal, setIsOpenBookModal] = useState(false);
 
     const [phoneAndPass, setPhoneAndPass] = useState<any>({});
 	const [phonePassName, setPhonePassName] = useState<any>({});
 	const [allUsers, setAllUsers] = useState<any>({});
 	const [profileText, setprofileText] = useState<any>('Авторизация');
 	const [registrText, setRegistrText] = useState<any>('Регистрация');
+
+    useEffect(() => {
+        if (isOpenModal) {
+            document.body.style.overflow = 'hidden'
+        } else {
+            document.body.style.overflow = 'visible'
+        }
+    }, [isOpenBookModal])
+
+    const toggleBookModal = () => {
+        setIsOpenBookModal(!isOpenBookModal);
+    };
+
 
     useEffect(() => {
         const apiUrl = `http://localhost:5000/api/users`;
@@ -62,10 +77,7 @@ const Header = ({
     };
     
     const toggleRegModal = () => {
-        console.log('123123123123123')
-
         if (registrText === 'Регистрация') {
-                console.log('qweqweqweqe')
                 setPhonePassName({});
                 setIsOpenModalReg(true);
         } else {
@@ -136,14 +148,29 @@ const Header = ({
 
     return (
         <div className={styles.wrapper}>
-            <div className={styles.background} />
-            <img
-                onClick={() => navigate('/')}
-                className={styles.img} 
-                src={headerIMG}
-                alt='header'
-            />
-            <div className={styles.content}>
+            {
+                !isProfile && (
+                    <div className={ styles.background} />
+                )
+            }
+            {
+                !isProfile && (
+                    <img
+                        onClick={() => navigate('/')}
+                        className={cn(
+                            styles.img,
+                        )} 
+                        src={headerIMG}
+                        alt='header'
+                    />
+                )
+            }
+            <div
+                className={cn(
+                    styles.content,
+                    {[styles.profileContent]: isProfile},
+                )}
+            >
                 <div className={styles.headerContent}>
                     <img 
                         className={styles.logo}
@@ -196,13 +223,23 @@ const Header = ({
                         {registrText}
                     </div>
                 </div>
-                <div className={styles.bodyContent}>
-                        <div className={styles.title}>Сияй как в последний раз <div className={styles.text}>ВСЕГДА.</div></div>
-                        <div className={styles.subtitle}>Lorem Ipsum is simply dummy text of the 
-                            printing and typesetting industry. Lorem Ipsum has been the industry's 
-                            standard dummy text ever since the 1500s
+                {
+                    !isProfile && (
+                        <div className={styles.bodyContent}>
+                                <div className={styles.title}>Сияй как в последний раз <div className={styles.text}>ВСЕГДА.</div></div>
+                                <div className={styles.subtitle}>Lorem Ipsum is simply dummy text of the 
+                                    printing and typesetting industry. Lorem Ipsum has been the industry's 
+                                    standard dummy text ever since the 1500s
+                                </div>
+                                <button 
+                                    className={styles.button2}
+                                    onClick={toggleBookModal}    
+                                >
+                                    ЗАПИСАТЬСЯ
+                                </button>
                         </div>
-                </div>
+                    )
+                }
             </div>
             {
                 isOpenModal && (
@@ -265,6 +302,15 @@ const Header = ({
                                 Зарегистрироваться
                             </button>
                         </div>
+                    </Modal>
+                )
+            }
+            {
+                isOpenBookModal && (
+                    <Modal
+                        onClose={toggleBookModal}
+                    >
+                        <Form onClose={toggleBookModal}/>
                     </Modal>
                 )
             }

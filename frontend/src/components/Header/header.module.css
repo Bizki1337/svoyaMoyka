@@ -64,8 +64,11 @@
 .bodyContent {
     height: 100%;
     width: 50%;
-    margin: 100px 0px 0px 30px;
+    display: flex;
     color: white;
+    flex-direction: column;
+    justify-content: center;
+    margin-left: 50px;
 }
 .title {
     font-size: 3em;
@@ -97,6 +100,23 @@
 }
 .button {
     margin: 10px;
+    background-color: #FF013E;
+    color: white;
+    padding: 10px;
+    border-radius: 5px;
+    font-size: 1.2em;
+    border: none;
+    cursor: pointer;
+}
+.profileContent {
+    position: relative;
+    height: 150px;
+    background-color: black;
+    border-bottom: 1px solid #FF013E;
+}
+.button2 {
+    width: 100%;
+    margin-top: 30px;
     background-color: #FF013E;
     color: white;
     padding: 10px;
